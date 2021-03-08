@@ -170,3 +170,5 @@ void initTablaSimbolos()
 	insertTablaSimbolos(":=",OPASIGNA);*/
 	
 }
+
+///te quiero Edeeee
