@@ -261,13 +261,13 @@ void getToken()
 		else if (c==':')
 		{
 			//puede ser un : o un operador de asignacion
-			c=fgetc(archivo);
+			//c=fgetc(archivo);
 			/*if (c=='='){
 				t.compLex=OPASIGNA;
 				t.pe=buscar(":=");
 			}
 			else{*/
-			ungetc(c,archivo);
+			//ungetc(c,archivo);
 			t.compLex=':';
 			t.pe=buscar(":");
 			//}
@@ -361,7 +361,10 @@ void getToken()
 		}*/
 		else if (c=='[')
 		{
-			//un caracter o una cadena de caracteres
+			t.compLex='[';
+			t.pe=buscar("[");
+			break;
+			/*un caracter o una cadena de caracteres
 			i=0;
 			lexema[i]=c;
 			i++;
@@ -419,6 +422,12 @@ void getToken()
 			}
 			break;
 			
+			break;*/
+		}
+		else if (c==']')
+		{
+			t.compLex=']';
+			t.pe=buscar("]");
 			break;
 		}
 		else if (c=='\"')
@@ -447,36 +456,62 @@ void getToken()
 				}
 				else if(c==EOF)
 				{
-					error("Se llego al fin de archivo sin finalizar un literal");
+					error("Se llego al fin de archivo sin finalizar la cadena");
+					break;
 				}
 				else{
+					
 					lexema[i]=c;
 					i++;
 				}
-			}while(isascii(c));
+			}while(c!=EOF);//while(isascii(c));
 			lexema[i]='\0';
+
+			//printf("Lexema: %s",lexema);
 			if (c!=EOF)
 				ungetc(c,archivo);
 			else
 				c=0;
+			
+			t.pe=buscar(lexema);
+			t.compLex=t.pe->compLex;
+			//printf("%d",t.pe->compLex);
+			if (t.pe->compLex==-1)
+			{
+				strcpy(e.lexema,lexema);
+				e.compLex=STRING;
+				insertar(e);
+				t.pe=buscar(lexema);
+			}
+			//t.compLex=STRING;
+			/*lexema[i]='\0';
+			if (c!=EOF)
+				ungetc(c,archivo);
+			else
+				c=0;
+			
 			t.pe=buscar(lexema);
 			t.compLex=t.pe->compLex;
 			if (t.pe->compLex==-1)
 			{
 				strcpy(e.lexema,lexema);
-				if (strlen(lexema)==3 || strcmp(lexema,"""""")==0)
-					e.compLex=CAR;
-				else
-					e.compLex=STRING;
+				//if (strlen(lexema)==3 || strcmp(lexema,"""""")==0)
+				//	e.compLex=CAR;
+				//else
+				e.compLex=STRING;
 				insertar(e);
 				t.pe=buscar(lexema);
-				t.compLex=e.compLex;
-			}
+			}*/
+			t.compLex=STRING;
 			break;
 		}
 		else if (c=='{')
 		{
-			//elimina el comentario
+			t.compLex='{';
+			t.pe=buscar("{");
+			break;
+			/*
+			elimina el comentario
 			while(c!=EOF)
 			{
 				c=fgetc(archivo);
@@ -489,7 +524,13 @@ void getToken()
 				}
 			}
 			if (c==EOF)
-				error("Se llego al fin de archivo sin finalizar un comentario");
+				error("Se llego al fin de archivo sin finalizar un comentario");*/
+		}
+		else if (c=='}')
+		{
+			t.compLex='}';
+			t.pe=buscar("}");
+			break;
 		}
 		else if (c!=EOF)
 		{

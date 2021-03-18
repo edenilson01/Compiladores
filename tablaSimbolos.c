@@ -107,7 +107,7 @@ void insertTablaSimbolos(const char *s, int n)
 void initTablaSimbolos()
 {
 	int i;
-	const char *vector[]={
+	/*const char *vector[]={
 		"program",
 		"type",
 		"var",
@@ -136,11 +136,11 @@ void initTablaSimbolos()
 		"writeln",
 		"write",
 		"const"
-	};
- 	for (i=0;i<28;i++)
+	};*/
+ 	/*for (i=0;i<28;i++)
 	{
 		insertTablaSimbolos(vector[i],i+256);
-	}
+	}*/
 	insertTablaSimbolos("[",'[');
 	insertTablaSimbolos("]",']');
 	insertTablaSimbolos("{",'{');

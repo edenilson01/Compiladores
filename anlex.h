@@ -48,9 +48,9 @@
 #define USER_TYPE	294*/
 
 #define STRING		288
-#define ARRAY 257
-#define OBJECT 258
-#define ATRIBUTO 259
+#define ARRAY       257
+#define OBJECT      258
+#define ATRIBUTO    259
 #define ID			285
 #define NUM			284
 #define BOOL		286
