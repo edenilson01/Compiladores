@@ -1,16 +1,14 @@
 /*
- *	Analizador L�xico	
+ *	Analizador Lexico	
  *	Curso: Compiladores y Lenguajes de Bajo de Nivel
- *	Pr�ctica de Programaci�n Nro. 1
+ *	Practica de Programacion Nro. 1
  *	
  *	Descripcion:
- *	Implementa un analizador l�xico que reconoce n�meros, identificadores, 
- * 	palabras reservadas, operadores y signos de puntuaci�n para un lenguaje
- * 	con sintaxis tipo Json.
+ *	Implementar un analizador léxico para el lenguaje Json simplificado.
  *	
  */
 
-/*********** Inclusi�n de cabecera **************/
+/*********** Inclusion de cabecera **************/
 #include "anlex.h"
 
 
@@ -23,7 +21,7 @@ token t;				// token global para recibir componentes del Analizador Lexico
 FILE *archivo;			// Fuente Json
 char lexema[TAMLEX];	// Utilizado por el analizador lexico
 
-int numLinea=1;			// Numero de Linea
+int numLinea = 1;			// Numero de Linea
 
 /**************** Funciones **********************/
 
@@ -43,7 +41,9 @@ void getToken(){
 	entrada e;
 
 	while((c=fgetc(archivo))!=EOF){	
-		if (c==' ' || c=='\t' || c=='\n'){
+		if (c==' ' || c=='\t'){
+			printf("%c", c);	
+		}else if(c=='\n'){
 			printf("%c", c);
 			numLinea++;
 		}else if (tolower(c)=='t' || tolower(c)=='T' || tolower(c)=='f' || tolower(c)=='F' || tolower(c)=='n' || tolower(c)=='N'){
@@ -61,26 +61,14 @@ void getToken(){
 				c=0;
 			
 			if (strcmp(lexema, "true")==0 || strcmp(lexema, "TRUE")==0){
-				strcpy(e.lexema,lexema);
-				e.compLex=TRUE;
-				insertar(e);
-				t.pe=buscar(lexema);
+				t.pe=buscar("true");
 				t.compLex=TRUE;
-				strcpy(t.componente,"PR_TRUE");
 			}else if (strcmp(lexema, "false")==0 || strcmp(lexema, "FALSE")==0){
-				strcpy(e.lexema,lexema);
-				e.compLex=FALSE;
-				insertar(e);
-				t.pe=buscar(lexema);
+				t.pe=buscar("false");
 				t.compLex=FALSE;
-				strcpy(t.componente,"PR_FALSE");
 			}else if (strcmp(lexema, "null")==0 || strcmp(lexema, "NULL")==0){
-				strcpy(e.lexema,lexema);
-				e.compLex=A_NULL;
-				insertar(e);
-				t.pe=buscar(lexema);
+				t.pe=buscar("null");
 				t.compLex=A_NULL;
-				strcpy(t.componente,"PR_NULL");
 			}else{
 				error("No se reconoce");
 			}
@@ -109,13 +97,19 @@ void getToken(){
 						estado=6;
 					}
 					break;
-				case 1://un punto, debe seguir un digito (caso especial de array, puede venir otro punto)
+				case 1://un punto, debe seguir un digito
 					c=fgetc(archivo);						
 					if (isdigit(c)){
 						lexema[++i]=c;
 						estado=2;
 					}else{
-						sprintf(msg,"No se esperaba '%c'",c);
+						if (c=='\n'){
+							sprintf(msg,"No se esperaba un salto de linea");
+						}else if (c=='\t' || c==' '){
+							sprintf(msg,"No se esperaba un espacio");
+						}else{
+							sprintf(msg,"No se esperaba '%c'",c);
+						}
 						estado=-1;
 					}
 					break;
@@ -140,7 +134,13 @@ void getToken(){
 						lexema[++i]=c;
 						estado=5;
 					}else{
-						sprintf(msg,"No se esperaba '%c'",c);
+						if (c=='\n'){
+							sprintf(msg,"No se esperaba un salto de linea");
+						}else if (c=='\t' || c==' '){
+							sprintf(msg,"No se esperaba un espacio");
+						}else{
+							sprintf(msg,"No se esperaba '%c'",c);
+						}
 						estado=-1;
 					}
 					break;
@@ -150,7 +150,13 @@ void getToken(){
 						lexema[++i]=c;
 						estado=5;
 					}else{
-						sprintf(msg,"No se esperaba '%c'",c);
+						if (c=='\n'){
+							sprintf(msg,"No se esperaba un salto de linea");
+						}else if (c=='\t' || c==' '){
+							sprintf(msg,"No se esperaba un espacio");
+						}else{
+							sprintf(msg,"No se esperaba '%c'",c);
+						}
 						estado=-1;
 					}
 					break;
@@ -174,40 +180,37 @@ void getToken(){
 					if (t.pe->compLex==-1){
 						strcpy(e.lexema,lexema);
 						e.compLex=NUM;
+						strcpy(e.componente,"NUMBER");
 						insertar(e);
 						t.pe=buscar(lexema);
 					}
 					t.compLex=NUM;
-					strcpy(t.componente,"NUMBER");
 					break;
 				case -1:
 					if (c==EOF)
 						error("No se esperaba el fin de archivo");
 					else
 						error(msg);
-					exit(1);
+					strcpy(t.pe->componente,"");
+					acepto=-1;
 				}
 			}
 			break;
 		}else if (c==':'){
 			t.compLex=':';
 			t.pe=buscar(":");
-			strcpy(t.componente,"DOS_PUNTOS");
 			break;
 		}else if (c==','){
 			t.compLex=',';
-			strcpy(t.componente,"COMA");
 			t.pe=buscar(",");
 			break;
 		}else if (c=='['){
 			t.compLex='[';
 			t.pe=buscar("[");
-			strcpy(t.componente,"L_CORCHETE");
 			break;
 		}else if (c==']'){
 			t.compLex=']';
 			t.pe=buscar("]");
-			strcpy(t.componente,"R_CORCHETE");
 			break;
 		}
 		else if (c=='\"'){ 
@@ -215,6 +218,7 @@ void getToken(){
 			i=0;
 			lexema[i]=c;
 			i++;
+			int cantidadSalto = 0; //en caso de que la cadena cuente con saltos de linea
 			do{
 				c=fgetc(archivo);
 				if (c=='\"'){
@@ -231,38 +235,44 @@ void getToken(){
 					}
 				}else if(c==EOF){
 					error("Se llego al fin de archivo sin finalizar la cadena");
-					break;
-				}else{	
+					break;				
+				}else{
+					if (c=='\n')
+						cantidadSalto++;
+					
 					lexema[i]=c;
 					i++;
 				}
 			}while(c!=EOF);
+			numLinea = numLinea + cantidadSalto;
 			lexema[i]='\0';
-			if (c!=EOF)
+			if (c!=EOF){
 				ungetc(c,archivo);
-			else
+			}else{
 				c=0;
-			
-			t.pe=buscar(lexema);
-			t.compLex=t.pe->compLex;
-			if (t.pe->compLex==-1){
-				strcpy(e.lexema,lexema);
-				e.compLex=STRING;
-				insertar(e);
-				t.pe=buscar(lexema);
 			}
-			t.compLex=STRING;
-			strcpy(t.componente,"STRING");
+			if (c==0){
+				t.compLex=EOF;
+				t.pe=NULL;
+			}else{
+				t.pe=buscar(lexema);
+				if (t.pe->compLex==-1){
+					strcpy(e.lexema,lexema);
+					e.compLex=STRING;
+					strcpy(e.componente,"STRING");
+					insertar(e);
+					t.pe=buscar(lexema);
+					t.compLex=STRING;
+				}
+			}
 			break;
 		}else if (c=='{'){
 			t.compLex='{';
 			t.pe=buscar("{");
-			strcpy(t.componente,"L_LLAVE");
 			break;
 		}else if (c=='}'){
 			t.compLex='}';
 			t.pe=buscar("}");
-			strcpy(t.componente,"R_LLAVE");
 			break;
 		}else if (c!=EOF){
 			sprintf(msg,"%c no esperado",c);
@@ -270,7 +280,7 @@ void getToken(){
 		}
 	}if (c==EOF){
 		t.compLex=EOF;
-		t.pe=&e;
+		t.pe=NULL;
 	}	
 }
 
@@ -283,9 +293,14 @@ int main(int argc,char* args[]){
 		if (!(archivo=fopen(args[1],"rt"))){
 			printf("Archivo no encontrado.\n");
 			exit(1);
-		}while (t.compLex!=EOF){
+		}
+		
+		while (t.compLex!=EOF){
 			getToken();
-			printf("%s ", t.componente);
+			if (t.compLex!=EOF){
+				printf("%s ", t.pe->componente);
+			}
+			
 		}
 		fclose(archivo);
 	}else{

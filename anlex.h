@@ -12,8 +12,8 @@
 #define TRUE		286
 #define FALSE		287
 #define A_NULL		288
-
 // Fin Codigos
+
 #define TAMBUFF 	5
 #define TAMLEX 		50
 #define TAMHASH 	101
@@ -23,13 +23,12 @@
 typedef struct entrada{
 	//definir los campos de 1 entrada de la tabla de simbolos
 	int compLex;
-	char lexema[TAMLEX];	
-	struct entrada *tipoDato;
+	char lexema[TAMLEX];
+	char componente[TAMLEX];	
 } entrada;
 
 typedef struct {
 	int compLex;
-	char componente[TAMLEX];
 	entrada *pe;
 } token;
 

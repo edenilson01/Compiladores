@@ -83,21 +83,22 @@ entrada* buscar(const char *clave){
 	return &tabla[pos];
 }
 
-void insertTablaSimbolos(const char *s, int n){
+void insertTablaSimbolos(const char *s, char *comp, int n){
 	entrada e;
 	strcpy(e.lexema,s);
+	strcpy(e.componente,comp);
 	e.compLex=n;
 	insertar(e);
 }
 
 void initTablaSimbolos(){
-	insertTablaSimbolos("[",'[');
-	insertTablaSimbolos("]",']');
-	insertTablaSimbolos("{",'{');
-	insertTablaSimbolos("}",'}');
-	insertTablaSimbolos(",",',');
-	insertTablaSimbolos(":",':');
-	insertTablaSimbolos("true",TRUE);
-	insertTablaSimbolos("false",FALSE);
-	insertTablaSimbolos("null",A_NULL);	
+	insertTablaSimbolos("[","L_CORCHETE",'[');
+	insertTablaSimbolos("]","R_CORCHETE",']');
+	insertTablaSimbolos("{","L_LLAVE",'{');
+	insertTablaSimbolos("}","R_LLAVE",'}');
+	insertTablaSimbolos(",","COMA",',');
+	insertTablaSimbolos(":","DOS_PUNTOS",':');
+	insertTablaSimbolos("true","PTR_TRUE",TRUE);
+	insertTablaSimbolos("false","PTR_FALSE",FALSE);
+	insertTablaSimbolos("null","PTR_NULL",A_NULL);	
 }
