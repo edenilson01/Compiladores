@@ -46,7 +46,7 @@ void getToken(){
 		}else if(c=='\n'){
 			printf("%c", c);
 			numLinea++;
-		}else if (tolower(c)=='t' || tolower(c)=='T' || tolower(c)=='f' || tolower(c)=='F' || tolower(c)=='n' || tolower(c)=='N'){
+		}else if (tolower(c)=='t' || tolower(c)=='f' || tolower(c)=='n'){
 			//es un boolean o null
 			i=0;
 			do{
@@ -70,6 +70,7 @@ void getToken(){
 				t.pe=buscar("null");
 				t.compLex=A_NULL;
 			}else{
+				strcpy(t.pe->componente,"");
 				error("No se reconoce");
 			}
 			break;
