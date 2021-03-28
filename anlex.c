@@ -17,7 +17,7 @@
 token t;				// token global para recibir componentes del Analizador Lexico
 
 // variables para el analizador lexico
-
+FILE *output;
 FILE *archivo;			// Fuente Json
 char lexema[TAMLEX];	// Utilizado por el analizador lexico
 
@@ -29,7 +29,7 @@ int numLinea = 1;			// Numero de Linea
 // Rutinas del analizador lexico
 
 void error(const char* mensaje){
-	printf("Linea %d: Error. %s.\n",numLinea,mensaje);	
+	fprintf(output, "Linea %d: Error. %s.\n",numLinea,mensaje);	
 }
 
 void getToken(){
@@ -42,9 +42,9 @@ void getToken(){
 
 	while((c=fgetc(archivo))!=EOF){	
 		if (c==' ' || c=='\t'){
-			printf("%c", c);	
+			fprintf(output,"%c", c);	
 		}else if(c=='\n'){
-			printf("%c", c);
+			fprintf(output, "%c", c);
 			numLinea++;
 		}else if (tolower(c)=='t' || tolower(c)=='f' || tolower(c)=='n'){
 			//es un boolean o null
@@ -289,6 +289,8 @@ int main(int argc,char* args[]){
 	// inicializar analizador lexico
 	initTabla();
 	initTablaSimbolos();
+
+	output = fopen("salida.txt", "w");
 	
 	if(argc > 1){
 		if (!(archivo=fopen(args[1],"rt"))){
@@ -299,10 +301,11 @@ int main(int argc,char* args[]){
 		while (t.compLex!=EOF){
 			getToken();
 			if (t.compLex!=EOF){
-				printf("%s ", t.pe->componente);
+				fprintf(output,"%s ", t.pe->componente);
 			}
 			
 		}
+		fclose(output);
 		fclose(archivo);
 	}else{
 		printf("Debe pasar como parametro el path al archivo fuente.\n");
